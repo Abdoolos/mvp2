@@ -9,9 +9,9 @@ const nextConfig = {
     NEXT_PUBLIC_DESIGNER: 'Abdullah Alawiss',
   },
   // Ensure CSS processing works correctly
-  experimental: {
-    optimizeCss: true,
-  },
+  // experimental: {
+  //   optimizeCss: true, // Removed to avoid critters dependency
+  // },
   // Webpack configuration to handle PostCSS properly
   webpack: (config, { dev, isServer }) => {
     // Ensure autoprefixer and postcss are loaded correctly
