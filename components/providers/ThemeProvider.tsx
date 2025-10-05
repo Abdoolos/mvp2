@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 type Theme = 'light' | 'dark' | 'system'
 
@@ -25,31 +25,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
 
   useEffect(() => {
-    const stored = localStorage.getItem('theme') as Theme
-    if (stored) {
-      setTheme(stored)
+    const storedTheme = localStorage.getItem('theme') as Theme
+    if (storedTheme) {
+      setTheme(storedTheme)
     }
   }, [])
 
   useEffect(() => {
     const root = window.document.documentElement
-    
-    const updateTheme = () => {
-      let resolved: 'light' | 'dark'
+
+    const applyTheme = () => {
+      let newTheme: 'light' | 'dark'
       
       if (theme === 'system') {
-        resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        newTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
       } else {
-        resolved = theme
+        newTheme = theme
       }
-      
-      setResolvedTheme(resolved)
-      
+
+      setResolvedTheme(newTheme)
       root.classList.remove('light', 'dark')
-      root.classList.add(resolved)
-      
-      // Update CSS variables for toast
-      if (resolved === 'dark') {
+      root.classList.add(newTheme)
+
+      // Update toast colors
+      if (newTheme === 'dark') {
         root.style.setProperty('--toast-bg', '#374151')
         root.style.setProperty('--toast-color', '#f9fafb')
         root.style.setProperty('--toast-border', '#4b5563')
@@ -59,25 +58,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         root.style.setProperty('--toast-border', '#e5e7eb')
       }
     }
-    
-    updateTheme()
+
+    applyTheme()
     localStorage.setItem('theme', theme)
-    
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     if (theme === 'system') {
-      mediaQuery.addEventListener('change', updateTheme)
-      return () => mediaQuery.removeEventListener('change', updateTheme)
+      mediaQuery.addEventListener('change', applyTheme)
+      return () => mediaQuery.removeEventListener('change', applyTheme)
     }
   }, [theme])
 
-  const value = {
-    theme,
-    setTheme,
-    resolvedTheme,
-  }
-
   return (
-    <ThemeContext.Provider value={value}>
+    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
       {children}
     </ThemeContext.Provider>
   )
