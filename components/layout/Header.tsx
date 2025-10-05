@@ -9,7 +9,7 @@ import {
   ComputerDesktopIcon,
   Bars3Icon
 } from '@heroicons/react/24/outline'
-import { useTheme } from '@/components/providers/ThemeProvider'
+import { useTheme } from '../providers/ThemeProvider'
 import { clsx } from 'clsx'
 
 export function Header() {
